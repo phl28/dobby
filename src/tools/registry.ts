@@ -43,11 +43,11 @@ export const TOOLS: Tool[] = [
     version: 'qwen -v',
   },
   {
-    id: 'cursor-agent',
-    label: 'Cursor Agent',
-    detect: 'command -v cursor-agent',
-    update: 'cursor-agent upgrade',
-    version: 'cursor-agent --version',
+    id: 'cursor-cli',
+    label: 'Cursor CLI (agent)',
+    detect: 'command -v agent || command -v cursor-agent',
+    update: 'curl https://cursor.com/install -fsS | bash',
+    version: 'agent --version 2>/dev/null || cursor-agent --version',
   },
   {
     id: 'droid',
@@ -69,13 +69,6 @@ export const TOOLS: Tool[] = [
     detect: 'command -v pi',
     update: 'pi update',
     version: 'pi -v',
-  },
-  {
-    id: 'antigravity',
-    label: 'Antigravity CLI',
-    detect: 'command -v antigravity',
-    update: 'npm install -g @antigravity/cli',
-    version: 'antigravity --version',
   },
 ];
 
