@@ -1,0 +1,27 @@
+{
+  "name": "dobby",
+  "version": "0.1.0",
+  "description": "Background updater for your agentic coding CLIs. Like the character, Dobby keeps things ready while you sleep.",
+  "type": "module",
+  "bin": {
+    "dobby": "./bin/dobby.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "prepare": "tsc"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.2.1",
+    "commander": "^12.1.0",
+    "execa": "^9.5.2",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  }
+}

@@ -1,0 +1,122 @@
+import { promises as fs } from 'node:fs';
+import * as path from 'node:path';
+import * as os from 'node:os';
+import { execa } from 'execa';
+import { LOG_DIR } from './config.js';
+import type { Frequency } from './config.js';
+
+export const LAUNCHD_LABEL = 'ai.dobby.update';
+export const PLIST_PATH = path.join(
+  os.homedir(),
+  'Library',
+  'LaunchAgents',
+  `${LAUNCHD_LABEL}.plist`,
+);
+
+function gui(): string {
+  return `gui/${process.getuid?.() ?? 501}`;
+}
+
+function scheduleXml(freq: Frequency, hour: number): string {
+  if (freq === 'hourly') {
+    return '<key>StartInterval</key><integer>3600</integer>';
+  }
+  if (freq === 'daily') {
+    return [
+      '<key>StartCalendarInterval</key>',
+      '<dict>',
+      `  <key>Hour</key><integer>${hour}</integer>`,
+      '  <key>Minute</key><integer>0</integer>',
+      '</dict>',
+    ].join('\n  ');
+  }
+  // weekly: Sunday at given hour
+  return [
+    '<key>StartCalendarInterval</key>',
+    '<dict>',
+    '  <key>Weekday</key><integer>0</integer>',
+    `  <key>Hour</key><integer>${hour}</integer>`,
+    '  <key>Minute</key><integer>0</integer>',
+    '</dict>',
+  ].join('\n  ');
+}
+
+export type PlistInputs = {
+  frequency: Frequency;
+  scheduledHour: number;
+  binPath: string;
+  nodePath: string;
+};
+
+export function buildPlist(input: PlistInputs): string {
+  const stdoutPath = path.join(LOG_DIR, 'launchd.out');
+  const stderrPath = path.join(LOG_DIR, 'launchd.err');
+  const envPath = '/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:' + (process.env.HOME ?? '') + '/.npm-global/bin';
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>${LAUNCHD_LABEL}</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>${input.nodePath}</string>
+    <string>${input.binPath}</string>
+    <string>update</string>
+  </array>
+  <key>RunAtLoad</key><false/>
+  ${scheduleXml(input.frequency, input.scheduledHour)}
+  <key>StandardOutPath</key><string>${stdoutPath}</string>
+  <key>StandardErrorPath</key><string>${stderrPath}</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key><string>${envPath}</string>
+  </dict>
+</dict>
+</plist>
+`;
+}
+
+export async function writePlist(input: PlistInputs): Promise<string> {
+  await fs.mkdir(path.dirname(PLIST_PATH), { recursive: true });
+  await fs.writeFile(PLIST_PATH, buildPlist(input), 'utf8');
+  return PLIST_PATH;
+}
+
+export async function bootout(): Promise<void> {
+  await execa('launchctl', ['bootout', `${gui()}/${LAUNCHD_LABEL}`], {
+    reject: false,
+  });
+}
+
+export async function bootstrap(): Promise<void> {
+  await execa('launchctl', ['bootstrap', gui(), PLIST_PATH], {
+    reject: false,
+  });
+}
+
+export async function reload(input: PlistInputs): Promise<void> {
+  await bootout();
+  await writePlist(input);
+  await bootstrap();
+}
+
+export async function isLoaded(): Promise<boolean> {
+  const res = await execa('launchctl', ['print', `${gui()}/${LAUNCHD_LABEL}`], {
+    reject: false,
+  });
+  return res.exitCode === 0;
+}
+
+export async function removePlist(): Promise<void> {
+  try {
+    await fs.unlink(PLIST_PATH);
+  } catch (err: unknown) {
+    if ((err as NodeJS.ErrnoException).code !== 'ENOENT') throw err;
+  }
+}
+
+export function describeNextRun(freq: Frequency, hour: number): string {
+  if (freq === 'hourly') return 'every hour, on the hour';
+  if (freq === 'daily') return `every day at ${hour.toString().padStart(2, '0')}:00 local`;
+  return `every Sunday at ${hour.toString().padStart(2, '0')}:00 local`;
+}

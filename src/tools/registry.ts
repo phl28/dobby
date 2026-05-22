@@ -1,0 +1,84 @@
+export type Tool = {
+  id: string;
+  label: string;
+  detect: string;
+  update: string;
+  version?: string;
+};
+
+export const TOOLS: Tool[] = [
+  {
+    id: 'claude-code',
+    label: 'Claude Code',
+    detect: 'command -v claude',
+    update: 'claude update',
+    version: 'claude -v',
+  },
+  {
+    id: 'opencode',
+    label: 'OpenCode',
+    detect: 'command -v opencode',
+    update: 'opencode upgrade',
+    version: 'opencode -v',
+  },
+  {
+    id: 'codex',
+    label: 'OpenAI Codex',
+    detect: 'command -v codex',
+    update: 'npm install -g @openai/codex',
+    version: 'codex -V',
+  },
+  {
+    id: 'gemini-cli',
+    label: 'Gemini CLI',
+    detect: 'command -v gemini',
+    update: 'npm install -g @google/gemini-cli',
+    version: 'gemini --version',
+  },
+  {
+    id: 'qwen-code',
+    label: 'Qwen Code',
+    detect: 'command -v qwen',
+    update: 'npm install -g @qwen-code/qwen-code@latest',
+    version: 'qwen -v',
+  },
+  {
+    id: 'cursor-agent',
+    label: 'Cursor Agent',
+    detect: 'command -v cursor-agent',
+    update: 'cursor-agent upgrade',
+    version: 'cursor-agent --version',
+  },
+  {
+    id: 'droid',
+    label: 'Droid CLI (Factory)',
+    detect: 'command -v droid',
+    update: 'curl -fsSL https://app.factory.ai/cli | sh',
+    version: 'droid -v',
+  },
+  {
+    id: 'amp',
+    label: 'Amp Code',
+    detect: 'command -v amp',
+    update: 'amp update',
+    version: 'amp -V',
+  },
+  {
+    id: 'pi',
+    label: 'Pi',
+    detect: 'command -v pi',
+    update: 'pi update',
+    version: 'pi -v',
+  },
+  {
+    id: 'antigravity',
+    label: 'Antigravity CLI',
+    detect: 'command -v antigravity',
+    update: 'npm install -g @antigravity/cli',
+    version: 'antigravity --version',
+  },
+];
+
+export function findTool(id: string): Tool | undefined {
+  return TOOLS.find((t) => t.id === id);
+}
