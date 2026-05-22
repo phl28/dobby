@@ -46,7 +46,10 @@ export const TOOLS: Tool[] = [
     id: 'cursor-cli',
     label: 'Cursor CLI (agent)',
     detect: 'command -v agent || command -v cursor-agent',
-    update: 'curl https://cursor.com/install -fsS | bash',
+    // Prefer `agent update` (the supported path). If the new `agent` binary
+    // isn't installed yet (machines that only have the legacy `cursor-agent`),
+    // fall back to the official install script.
+    update: 'command -v agent >/dev/null && agent update || curl https://cursor.com/install -fsS | bash',
     version: 'agent --version 2>/dev/null || cursor-agent --version',
   },
   {
