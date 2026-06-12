@@ -1,6 +1,6 @@
 import pc from 'picocolors';
 import { requireConfig, saveConfig } from '../config.js';
-import { reload, bootout, removePlist, describeNextRun } from '../launchd.js';
+import { reload, bootout, removeFiles, describeNextRun } from '../scheduler.js';
 import { BIN_PATH } from '../paths.js';
 
 export async function enableCommand(): Promise<void> {
@@ -20,7 +20,7 @@ export async function enableCommand(): Promise<void> {
 export async function disableCommand(): Promise<void> {
   const config = await requireConfig();
   await bootout();
-  await removePlist();
+  await removeFiles();
   await saveConfig({ ...config, schedulerEnabled: false });
   console.log(pc.yellow('Scheduler disabled. Config preserved.'));
 }

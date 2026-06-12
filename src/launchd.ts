@@ -6,12 +6,13 @@ import { LOG_DIR, CONFIG_DIR } from './config.js';
 import type { Frequency } from './config.js';
 
 export const LAUNCHD_LABEL = 'ai.dobby.update';
-export const PLIST_PATH = path.join(
+export const SCHEDULER_PATH = path.join(
   os.homedir(),
   'Library',
   'LaunchAgents',
   `${LAUNCHD_LABEL}.plist`,
 );
+export const PLIST_PATH = SCHEDULER_PATH;
 export const AGENT_SCRIPT_PATH = path.join(CONFIG_DIR, 'dobby-agent.sh');
 
 function gui(): string {
@@ -42,7 +43,7 @@ function scheduleXml(freq: Frequency, hour: number): string {
   ].join('\n  ');
 }
 
-export type PlistInputs = {
+export type SchedulerInputs = {
   frequency: Frequency;
   scheduledHour: number;
   binPath: string;
@@ -78,7 +79,7 @@ function buildEnvPath(nodePath: string): string {
   return merged.join(':');
 }
 
-export function buildPlist(input: PlistInputs): string {
+export function buildPlist(input: SchedulerInputs): string {
   const stdoutPath = path.join(LOG_DIR, 'launchd.out');
   const stderrPath = path.join(LOG_DIR, 'launchd.err');
   const envPath = buildEnvPath(input.nodePath);
@@ -104,7 +105,7 @@ export function buildPlist(input: PlistInputs): string {
 `;
 }
 
-export function buildAgentScript(input: PlistInputs): string {
+export function buildAgentScript(input: SchedulerInputs): string {
   // Wrapping the LaunchAgent in a zsh script means macOS attributes the
   // background item to the shell (Apple-signed) rather than to the `node`
   // binary's Developer ID ("Node.js Foundation"). The Label `ai.dobby.update`
@@ -117,14 +118,14 @@ exec ${input.nodePath} ${input.binPath} update
 `;
 }
 
-export async function writeAgentScript(input: PlistInputs): Promise<string> {
+export async function writeAgentScript(input: SchedulerInputs): Promise<string> {
   await fs.mkdir(path.dirname(AGENT_SCRIPT_PATH), { recursive: true });
   await fs.writeFile(AGENT_SCRIPT_PATH, buildAgentScript(input), 'utf8');
   await fs.chmod(AGENT_SCRIPT_PATH, 0o755);
   return AGENT_SCRIPT_PATH;
 }
 
-export async function writePlist(input: PlistInputs): Promise<string> {
+export async function writePlist(input: SchedulerInputs): Promise<string> {
   await fs.mkdir(path.dirname(PLIST_PATH), { recursive: true });
   await fs.writeFile(PLIST_PATH, buildPlist(input), 'utf8');
   return PLIST_PATH;
@@ -142,7 +143,7 @@ export async function bootstrap(): Promise<void> {
   });
 }
 
-export async function reload(input: PlistInputs): Promise<void> {
+export async function reload(input: SchedulerInputs): Promise<void> {
   await bootout();
   await writeAgentScript(input);
   await writePlist(input);
@@ -156,7 +157,7 @@ export async function isLoaded(): Promise<boolean> {
   return res.exitCode === 0;
 }
 
-export async function removePlist(): Promise<void> {
+export async function removeFiles(): Promise<void> {
   for (const target of [PLIST_PATH, AGENT_SCRIPT_PATH]) {
     try {
       await fs.unlink(target);
