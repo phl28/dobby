@@ -12,11 +12,11 @@ const program = new Command();
 program
   .name('dobby')
   .description('Background updater for your agentic coding CLIs.')
-  .version('0.2.1');
+  .version('0.3.0');
 
 program
   .command('init')
-  .description('Interactive onboarding: pick tools and cadence, install the launchd job.')
+  .description('Interactive onboarding: pick tools and cadence, install the background job.')
   .action(async () => {
     await initCommand();
   });
@@ -26,7 +26,7 @@ const runFn = async () => {
   if (code !== 0) process.exitCode = code;
 };
 
-program.command('update').description('Run the update pass once (this is what launchd invokes).').action(runFn);
+program.command('update').description('Run the update pass once (what the background job invokes).').action(runFn);
 program.command('run').description('Alias for `update`.').action(runFn);
 
 program.command('status').description('Show config, last run, next run, and log paths.').action(async () => {
@@ -47,10 +47,10 @@ program
     await frequencyCommand(value);
   });
 
-program.command('enable').description('Load the LaunchAgent.').action(async () => {
+program.command('enable').description('Enable the background scheduler.').action(async () => {
   await enableCommand();
 });
-program.command('disable').description('Unload the LaunchAgent (config kept).').action(async () => {
+program.command('disable').description('Disable the scheduler (config kept).').action(async () => {
   await disableCommand();
 });
 

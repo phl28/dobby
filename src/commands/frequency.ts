@@ -1,6 +1,6 @@
 import pc from 'picocolors';
 import { requireConfig, saveConfig, type Frequency } from '../config.js';
-import { reload, describeNextRun } from '../launchd.js';
+import { reload, describeNextRun } from '../scheduler.js';
 import { BIN_PATH } from '../paths.js';
 
 const VALID: Frequency[] = ['hourly', 'daily', 'weekly'];

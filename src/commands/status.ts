@@ -1,7 +1,7 @@
 import pc from 'picocolors';
 import { loadConfig, CONFIG_PATH, LOG_DIR } from '../config.js';
 import { findTool } from '../tools/registry.js';
-import { isLoaded, describeNextRun, PLIST_PATH } from '../launchd.js';
+import { isLoaded, describeNextRun, SCHEDULER_PATH } from '../scheduler.js';
 
 export async function statusCommand(): Promise<void> {
   const config = await loadConfig();
@@ -23,7 +23,7 @@ export async function statusCommand(): Promise<void> {
   console.log('  Last run        ' + (config.lastRun ?? pc.dim('never')) + (config.lastRunStatus ? pc.dim(`  (${config.lastRunStatus})`) : ''));
   console.log('  Config file     ' + pc.dim(CONFIG_PATH));
   console.log('  Log dir         ' + pc.dim(LOG_DIR));
-  console.log('  Plist           ' + pc.dim(PLIST_PATH));
+  console.log('  Scheduler cfg   ' + pc.dim(SCHEDULER_PATH));
   console.log('');
   console.log(pc.bold('  Tools'));
   if (config.selectedTools.length === 0) {

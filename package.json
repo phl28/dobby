@@ -1,6 +1,6 @@
 {
   "name": "dobby",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Background updater for your agentic coding CLIs. Like the character, Dobby keeps things ready while you sleep.",
   "type": "module",
   "bin": {

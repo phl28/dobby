@@ -10,7 +10,7 @@ import {
   type Config,
   type Frequency,
 } from '../config.js';
-import { reload, bootout, removePlist, describeNextRun, PLIST_PATH } from '../launchd.js';
+import { reload, bootout, removeFiles, describeNextRun, SCHEDULER_PATH } from '../scheduler.js';
 import { BIN_PATH } from '../paths.js';
 
 export async function initCommand(): Promise<void> {
@@ -53,7 +53,7 @@ export async function initCommand(): Promise<void> {
   })) as Frequency;
 
   const enableNow = await confirm({
-    message: 'Enable the launchd background job now?',
+    message: 'Enable the background job now?',
     default: true,
   });
 
@@ -79,10 +79,10 @@ export async function initCommand(): Promise<void> {
         ' Schedule: ' +
         pc.bold(describeNextRun(frequency, config.scheduledHour)),
     );
-    console.log(pc.dim(`  Plist: ${PLIST_PATH}`));
+    console.log(pc.dim(`  Config: ${SCHEDULER_PATH}`));
   } else {
     await bootout();
-    await removePlist();
+    await removeFiles();
     console.log(
       '\n' +
         pc.yellow('Config saved but scheduler is disabled.') +
