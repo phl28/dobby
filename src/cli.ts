@@ -1,5 +1,6 @@
 import { Command } from 'commander';
 import pc from 'picocolors';
+import { createRequire } from 'node:module';
 import { initCommand } from './commands/init.js';
 import { updateCommand } from './commands/update.js';
 import { statusCommand } from './commands/status.js';
@@ -7,12 +8,15 @@ import { addCommand } from './commands/add.js';
 import { frequencyCommand } from './commands/frequency.js';
 import { enableCommand, disableCommand } from './commands/enable.js';
 
+const require = createRequire(import.meta.url);
+const { version } = require('../package.json') as { version: string };
+
 const program = new Command();
 
 program
   .name('dobby')
   .description('Background updater for your agentic coding CLIs.')
-  .version('0.2.1');
+  .version(version);
 
 program
   .command('init')

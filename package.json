@@ -1,6 +1,6 @@
 {
   "name": "dobby-cli",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Background updater for your agentic coding CLIs. Like the character, Dobby keeps things ready while you sleep.",
   "license": "MIT",
   "type": "module",
