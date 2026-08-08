@@ -12,6 +12,7 @@ export type Config = {
   schedulerEnabled: boolean;
   lastRun?: string;
   lastRunStatus?: 'success' | 'partial' | 'failure';
+  lastRunTools?: { id: string; label: string; ok: boolean }[];
 };
 
 export const CONFIG_DIR = path.join(os.homedir(), '.config', 'dobby');

@@ -1,6 +1,7 @@
 import pc from 'picocolors';
 import { loadConfig, CONFIG_PATH, LOG_DIR } from '../config.js';
 import { findTool } from '../tools/registry.js';
+import { getVersion } from '../runner.js';
 import { isLoaded, describeNextRun, PLIST_PATH } from '../launchd.js';
 
 export async function statusCommand(): Promise<void> {
@@ -29,9 +30,22 @@ export async function statusCommand(): Promise<void> {
   if (config.selectedTools.length === 0) {
     console.log(pc.dim('    (none selected)'));
   } else {
-    for (const id of config.selectedTools) {
-      const tool = findTool(id);
-      console.log('    • ' + (tool?.label ?? id) + pc.dim('   ' + (tool?.update ?? '?')));
+    const lastRun = new Map((config.lastRunTools ?? []).map((t) => [t.id, t.ok]));
+    const rows = await Promise.all(
+      config.selectedTools.map(async (id) => {
+        const tool = findTool(id);
+        const version = tool ? await getVersion(tool) : null;
+        return { id, tool, label: tool?.label ?? id, version };
+      }),
+    );
+    const width = Math.max(...rows.map((r) => r.label.length));
+    for (const { id, tool, label, version } of rows) {
+      const mark = !tool ? pc.dim('?') : version ? pc.green('✓') : pc.red('✗');
+      const versionText = !tool ? pc.dim('not in registry') : version ? pc.dim(version) : pc.dim('not installed');
+      const ok = lastRun.get(id);
+      const last =
+        ok === undefined ? pc.dim('  ·') : ok ? pc.green('  last run ok') : pc.red('  last run failed');
+      console.log('    ' + mark + ' ' + label.padEnd(width) + '   ' + versionText + last);
     }
   }
   console.log('');

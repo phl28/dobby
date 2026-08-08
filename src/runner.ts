@@ -13,6 +13,18 @@ export async function isInstalled(tool: Tool): Promise<boolean> {
   }
 }
 
+export async function getVersion(tool: Tool): Promise<string | null> {
+  if (!tool.version) return null;
+  try {
+    const res = await execa(tool.version, { shell: true, reject: false, timeout: 15_000 });
+    if (res.exitCode !== 0) return null;
+    const out = (res.stdout || res.stderr || '').toString().trim().split('\n')[0];
+    return out || null;
+  } catch {
+    return null;
+  }
+}
+
 export async function runUpdate(tool: Tool): Promise<ToolRunResult> {
   const started = Date.now();
   try {
@@ -23,15 +35,7 @@ export async function runUpdate(tool: Tool): Promise<ToolRunResult> {
       all: false,
     });
     const ok = res.exitCode === 0;
-    let versionAfter: string | undefined;
-    if (ok && tool.version) {
-      try {
-        const v = await execa(tool.version, { shell: true, reject: false, timeout: 15_000 });
-        versionAfter = (v.stdout || v.stderr || '').toString();
-      } catch {
-        // best-effort only
-      }
-    }
+    const versionAfter = ok ? (await getVersion(tool)) ?? undefined : undefined;
     return {
       id: tool.id,
       label: tool.label,
