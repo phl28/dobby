@@ -42,6 +42,7 @@ export async function updateCommand(): Promise<number> {
     ...config,
     lastRun: new Date().toISOString(),
     lastRunStatus: status,
+    lastRunTools: results.map((r) => ({ id: r.id, label: r.label, ok: r.ok })),
   });
 
   console.log(
