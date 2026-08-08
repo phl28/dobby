@@ -6,7 +6,13 @@ Picks a list of tools (Claude Code, OpenCode, Codex, Qwen Code, Cursor Agent, Dr
 
 ## Install
 
+Requires [Node.js and npm](https://nodejs.org) installed.
+
 ```bash
+npm install -g dobby-cli   # installs the global `dobby` command
+```
+
+Prefer running from source? Clone, build, and link instead:
 git clone https://github.com/phl28/dobby.git ~/Code/dobby
 cd ~/Code/dobby
 npm install
