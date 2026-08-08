@@ -29,13 +29,6 @@ export const TOOLS: Tool[] = [
     version: 'codex -V',
   },
   {
-    id: 'gemini-cli',
-    label: 'Gemini CLI',
-    detect: 'command -v gemini',
-    update: 'npm install -g @google/gemini-cli',
-    version: 'gemini --version',
-  },
-  {
     id: 'qwen-code',
     label: 'Qwen Code',
     detect: 'command -v qwen',
@@ -72,6 +65,13 @@ export const TOOLS: Tool[] = [
     detect: 'command -v pi',
     update: 'pi update',
     version: 'pi -v',
+  },
+  {
+    id: 'herdr',
+    label: 'Herdr',
+    detect: 'command -v herdr',
+    update: 'herdr update',
+    version: 'herdr --version',
   },
 ];
 
