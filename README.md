@@ -2,7 +2,7 @@
 
 Background updater for your agentic coding CLIs. Like the house-elf, Dobby quietly keeps things ready while you sleep.
 
-Picks a list of tools (Claude Code, OpenCode, Codex, Gemini CLI, Cursor Agent, Droid, Amp, Pi, Qwen, Antigravity), schedules a `launchd` agent on macOS, and runs the right update command for each on the cadence you choose.
+Picks a list of tools (Claude Code, OpenCode, Codex, Qwen Code, Cursor Agent, Droid, Amp, Pi, Herdr), schedules a `launchd` agent on macOS, and runs the right update command for each on the cadence you choose.
 
 ## Install
 
@@ -41,7 +41,7 @@ dobby run       # update everything now (also what launchd invokes)
 
 ## Supported tools
 
-`claude-code`, `opencode`, `codex`, `gemini-cli`, `qwen-code`, `cursor-agent`, `droid`, `amp`, `pi`, `antigravity`.
+`claude-code`, `opencode`, `codex`, `qwen-code`, `cursor-cli`, `droid`, `amp`, `pi`, `herdr`.
 
 Add more by editing `src/tools/registry.ts` and rebuilding.
 
